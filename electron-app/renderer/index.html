@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Pro</title>
+    <!-- Google Fonts: Inter & JetBrains Mono for counts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+    <!-- Particle Canvas Background -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Custom Titlebar -->
+    <div class="titlebar">
+        <div class="titlebar-left">
+            <div class="app-logo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+            <div class="titlebar-title">TIMER PRO</div>
+        </div>
+        <div class="titlebar-right">
+            <button class="menu-btn" id="btn-menu" title="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="titlebar-controls">
+                <button class="titlebar-btn minimize" id="btn-minimize" title="Minimize">─</button>
+                <button class="titlebar-btn maximize" id="btn-maximize" title="Maximize">□</button>
+                <button class="titlebar-btn close" id="btn-close" title="Close">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dropdown Menu -->
+    <div class="dropdown-menu" id="dropdown-menu">
+        <div class="menu-item" id="menu-settings">
+            <span class="menu-icon">⚙</span>
+            <span>Settings</span>
+        </div>
+        <div class="menu-item" id="menu-shortcut">
+            <span class="menu-icon">⊞</span>
+            <span>Create Desktop Shortcut</span>
+        </div>
+        <div class="menu-item" id="menu-history">
+            <span class="menu-icon">📊</span>
+            <span>Statistics</span>
+        </div>
+        <div class="menu-divider"></div>
+        <div class="menu-item" id="menu-about">
+            <span class="menu-icon">ℹ</span>
+            <span>About</span>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="timer">
+                <span class="tab-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 10"></polyline></svg>
+                </span>
+                <span>Timer</span>
+                <span class="tab-badge" id="timer-badge" style="display:none;">0</span>
+            </button>
+            <button class="nav-tab" data-tab="stopwatch">
+                <span class="tab-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 16"></polyline></svg>
+                </span>
+                <span>Stopwatch</span>
+            </button>
+            <button class="nav-tab" data-tab="alarm">
+                <span class="tab-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><circle cx="12" cy="3" r="1"></circle></svg>
+                </span>
+                <span>Alarm</span>
+                <span class="tab-badge" id="alarm-badge" style="display:none;">0</span>
+            </button>
+            <button class="nav-tab" data-tab="pomodoro">
+                <span class="tab-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                </span>
+                <span>Pomodoro</span>
+            </button>
+            <button class="nav-tab" data-tab="world-clock">
+                <span class="tab-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                </span>
+                <span>World Clock</span>
+            </button>
+        </div>
+
+        <!-- Tab Content: Timer -->
+        <div class="tab-content active" id="tab-timer">
+            <div class="header">
+                <div>
+                    <h1>TIMER MANAGEMENT</h1>
+                    <div class="header-subtitle">Create and manage multiple timers simultaneously</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="active-timers-count">0</div>
+                        <div class="stat-label">Active</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="completed-today-count">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timer-list" id="timer-list">
+                <div class="empty-state" id="empty-timers">
+                    <div class="empty-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <div class="empty-title">No Active Timers</div>
+                    <div class="empty-text">Launch your first countdown timer to get started</div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary btn-large" id="btn-new-timer">
+                    <span class="btn-icon">+</span>
+                    <span>Create New Timer</span>
+                </button>
+                <button class="btn btn-secondary" id="btn-check-update">
+                    <span class="btn-icon">↻</span>
+                    <span>Check Updates</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content: Stopwatch -->
+        <div class="tab-content" id="tab-stopwatch">
+            <div class="header">
+                <div>
+                    <h1>STOPWATCH</h1>
+                    <div class="header-subtitle">High-precision stopwatch with lap times</div>
+                </div>
+            </div>
+
+            <div class="stopwatch-container">
+                <div class="stopwatch-display-wrapper">
+                    <div class="stopwatch-ring">
+                        <svg class="stopwatch-svg" viewBox="0 0 200 200">
+                            <circle class="stopwatch-ring-bg" cx="100" cy="100" r="90"></circle>
+                            <circle class="stopwatch-ring-progress" cx="100" cy="100" r="90" id="stopwatch-ring"></circle>
+                        </svg>
+                        <div class="stopwatch-display" id="stopwatch-display">00:00:00.000</div>
+                    </div>
+                </div>
+                
+                <div class="stopwatch-controls">
+                    <button class="btn btn-secondary btn-large" id="btn-sw-reset" disabled>
+                        <span class="btn-icon">↺</span>
+                        <span>Reset</span>
+                    </button>
+                    <button class="btn btn-primary btn-large btn-xl" id="btn-sw-start">
+                        <span class="btn-icon">▶</span>
+                        <span>Start</span>
+                    </button>
+                    <button class="btn btn-secondary btn-large" id="btn-sw-lap" disabled>
+                        <span class="btn-icon">⊕</span>
+                        <span>Lap</span>
+                    </button>
+                </div>
+
+                <div class="laps-container" id="laps-container" style="display:none;">
+                    <div class="laps-header">
+                        <div class="lap-stats">
+                            <div class="lap-stat">
+                                <span class="lap-stat-label">Total Laps</span>
+                                <span class="lap-stat-value" id="total-laps">0</span>
+                            </div>
+                            <div class="lap-stat">
+                                <span class="lap-stat-label">Best Lap</span>
+                                <span class="lap-stat-value" id="best-lap">—</span>
+                            </div>
+                            <div class="lap-stat">
+                                <span class="lap-stat-label">Average</span>
+                                <span class="lap-stat-value" id="avg-lap">—</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="laps-list" id="laps-list"></div>
+                    <div class="laps-actions">
+                        <button class="btn btn-secondary btn-small" id="btn-export-laps">
+                            <span class="btn-icon">📋</span>
+                            <span>Copy Laps</span>
+                        </button>
+                        <button class="btn btn-secondary btn-small" id="btn-clear-laps">
+                            <span class="btn-icon">🗑</span>
+                            <span>Clear Laps</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Alarm -->
+        <div class="tab-content" id="tab-alarm">
+            <div class="header">
+                <div>
+                    <h1>ALARM CLOCK</h1>
+                    <div class="header-subtitle">Set daily or weekly alarms with customized sounds</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="active-alarms-count">0</div>
+                        <div class="stat-label">Active</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="next-alarm-time">—</div>
+                        <div class="stat-label">Next Alarm</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alarm-list" id="alarm-list">
+                <div class="empty-state" id="empty-alarms">
+                    <div class="empty-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </div>
+                    <div class="empty-title">No Alarms Configured</div>
+                    <div class="empty-text">Add your first alarm to keep track of key events</div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary btn-large" id="btn-new-alarm">
+                    <span class="btn-icon">+</span>
+                    <span>Add Alarm</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content: Pomodoro (Focus Mode) -->
+        <div class="tab-content" id="tab-pomodoro">
+            <div class="header">
+                <div>
+                    <h1>FOCUS WORKSPACE</h1>
+                    <div class="header-subtitle">Increase your productivity with the Pomodoro Technique</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-box">
+                        <div class="stat-value" id="pomo-completed-count">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="pomo-current-streak">0</div>
+                        <div class="stat-label">Streak</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pomodoro-workspace">
+                <div class="pomodoro-timer-box">
+                    <div class="pomo-mode-indicator" id="pomo-mode-title">FOCUS TIME</div>
+                    
+                    <div class="pomo-circle-wrapper">
+                        <svg class="pomo-svg" viewBox="0 0 220 220">
+                            <circle class="pomo-ring-bg" cx="110" cy="110" r="95"></circle>
+                            <circle class="pomo-ring-progress" cx="110" cy="110" r="95" id="pomo-ring"></circle>
+                        </svg>
+                        <div class="pomo-time-display" id="pomo-time-display">25:00</div>
+                    </div>
+
+                    <div class="pomo-controls">
+                        <button class="btn btn-secondary btn-large" id="btn-pomo-reset">
+                            <span>Reset</span>
+                        </button>
+                        <button class="btn btn-primary btn-large btn-xl" id="btn-pomo-start">
+                            <span>Start Focus</span>
+                        </button>
+                        <button class="btn btn-secondary btn-large" id="btn-pomo-skip">
+                            <span>Skip</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pomo-settings-quick">
+                    <h3>Focus Settings</h3>
+                    <div class="pomo-presets">
+                        <button class="preset-btn pomo-preset-btn active" data-work="25" data-break="5">Classic (25 / 5)</button>
+                        <button class="preset-btn pomo-preset-btn" data-work="50" data-break="10">Extended (50 / 10)</button>
+                        <button class="preset-btn pomo-preset-btn" data-work="15" data-break="3">Short Sprint (15 / 3)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: World Clock -->
+        <div class="tab-content" id="tab-world-clock">
+            <div class="header">
+                <div>
+                    <h1>WORLD CLOCK</h1>
+                    <div class="header-subtitle">Monitor current times across different regions and timezones</div>
+                </div>
+            </div>
+
+            <div class="world-clock-grid" id="world-clock-grid">
+                <!-- Local clock card always present -->
+                <div class="world-clock-card local-clock">
+                    <div class="clock-card-header">
+                        <div class="clock-city">Your Location</div>
+                        <div class="clock-timezone-name" id="local-timezone-name">Local Time</div>
+                    </div>
+                    <div class="clock-time" id="local-clock-time">00:00:00</div>
+                    <div class="clock-date" id="local-clock-date">Saturday, July 11</div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary btn-large" id="btn-add-city">
+                    <span class="btn-icon">+</span>
+                    <span>Add City Clock</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span class="version-label">Version <span id="app-version">3.0.0</span></span>
+            <span class="update-status" id="update-status"></span>
+        </div>
+    </div>
+
+    <!-- Modal: Create Timer -->
+    <div class="modal-overlay" id="modal-create">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>NEW TIMER</h2>
+                <button class="modal-close" id="modal-close-create">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Timer Name</label>
+                    <input type="text" id="input-name" placeholder="Name" autocomplete="off" spellcheck="false">
+                </div>
+                <div class="form-row form-row-three">
+                    <div class="form-group">
+                        <label>Hours</label>
+                        <input type="number" id="input-hours" min="0" max="99" value="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Minutes</label>
+                        <input type="number" id="input-minutes" min="0" max="59" value="5" placeholder="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Seconds</label>
+                        <input type="number" id="input-seconds" min="0" max="59" value="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="timer-presets">
+                    <label>Quick Presets</label>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" data-sec="30">30s</button>
+                        <button class="preset-btn" data-minutes="1">1 min</button>
+                        <button class="preset-btn" data-minutes="5">5 min</button>
+                        <button class="preset-btn" data-minutes="10">10 min</button>
+                        <button class="preset-btn" data-minutes="15">15 min</button>
+                        <button class="preset-btn" data-minutes="30">30 min</button>
+                        <button class="preset-btn" data-minutes="60">1 hour</button>
+                    </div>
+                </div>
+                <div class="preview" id="timer-preview">
+                    Duration: 00:05:00
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-cancel-create">Cancel</button>
+                <button class="btn btn-primary" id="btn-start-timer">Start Timer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Create Alarm -->
+    <div class="modal-overlay" id="modal-alarm">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>NEW ALARM</h2>
+                <button class="modal-close" id="modal-close-alarm">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Alarm Name</label>
+                    <input type="text" id="input-alarm-name" placeholder="Alarm" autocomplete="off" spellcheck="false">
+                </div>
+                <div class="form-group">
+                    <label>Time</label>
+                    <input type="time" id="input-alarm-time" value="07:00">
+                </div>
+                <div class="form-group">
+                    <label>Sound</label>
+                    <select id="input-alarm-sound" class="setting-select">
+                        <option value="default">Default Beep</option>
+                        <option value="gentle">Gentle Chime</option>
+                        <option value="urgent">Urgent Alert</option>
+                        <option value="melody">Melody Chords</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Repeat</label>
+                    <div class="weekdays-picker" id="weekdays-picker">
+                        <button type="button" class="weekday-btn" data-day="1">Mon</button>
+                        <button type="button" class="weekday-btn" data-day="2">Tue</button>
+                        <button type="button" class="weekday-btn" data-day="3">Wed</button>
+                        <button type="button" class="weekday-btn" data-day="4">Thu</button>
+                        <button type="button" class="weekday-btn" data-day="5">Fri</button>
+                        <button type="button" class="weekday-btn" data-day="6">Sat</button>
+                        <button type="button" class="weekday-btn" data-day="0">Sun</button>
+                    </div>
+                    <div class="repeat-presets">
+                        <button class="preset-btn-small" data-preset="weekdays">Weekdays</button>
+                        <button class="preset-btn-small" data-preset="weekend">Weekend</button>
+                        <button class="preset-btn-small" data-preset="daily">Daily</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Snooze Duration</label>
+                    <select id="input-snooze-duration" class="setting-select">
+                        <option value="0">No snooze</option>
+                        <option value="5" selected>5 minutes</option>
+                        <option value="10">10 minutes</option>
+                        <option value="15">15 minutes</option>
+                        <option value="30">30 minutes</option>
+                    </select>
+                </div>
+                <div class="preview" id="alarm-preview">
+                    Alarm at 07:00 (One-time)
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-cancel-alarm">Cancel</button>
+                <button class="btn btn-primary" id="btn-save-alarm">Save Alarm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Alarm Triggered -->
+    <div class="modal-overlay" id="modal-alarm-triggered">
+        <div class="modal modal-alarm-triggered">
+            <div class="modal-body">
+                <div class="alarm-triggered-content">
+                    <div class="alarm-triggered-icon">🔔</div>
+                    <div class="alarm-triggered-title" id="alarm-triggered-name">Alarm</div>
+                    <div class="alarm-triggered-time" id="alarm-triggered-time">07:00</div>
+                    <div class="alarm-triggered-actions">
+                        <button class="btn btn-secondary btn-large" id="btn-snooze-alarm">
+                            <span class="btn-icon">💤</span>
+                            <span>Snooze</span>
+                        </button>
+                        <button class="btn btn-primary btn-large" id="btn-dismiss-alarm">
+                            <span class="btn-icon">✓</span>
+                            <span>Dismiss</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add World City -->
+    <div class="modal-overlay" id="modal-add-city">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>ADD WORLD CLOCK</h2>
+                <button class="modal-close" id="modal-close-add-city">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Choose Region / City</label>
+                    <select id="select-city" class="setting-select" style="width: 100%;">
+                        <option value="America/New_York|New York">New York (EST/EDT)</option>
+                        <option value="Europe/London|London">London (GMT/BST)</option>
+                        <option value="Europe/Paris|Paris">Paris (CET/CEST)</option>
+                        <option value="Europe/Moscow|Moscow">Moscow (MSK)</option>
+                        <option value="Asia/Dubai|Dubai">Dubai (GST)</option>
+                        <option value="Asia/Kolkata|New Delhi">New Delhi (IST)</option>
+                        <option value="Asia/Singapore|Singapore">Singapore (SGT)</option>
+                        <option value="Asia/Tokyo|Tokyo">Tokyo (JST)</option>
+                        <option value="Australia/Sydney|Sydney">Sydney (AEST/AEDT)</option>
+                        <option value="Pacific/Auckland|Auckland">Auckland (NZST/NZDT)</option>
+                        <option value="America/Los_Angeles|Los Angeles">Los Angeles (PST/PDT)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-cancel-add-city">Cancel</button>
+                <button class="btn btn-primary" id="btn-save-city">Add Clock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Settings -->
+    <div class="modal-overlay" id="modal-settings">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <h2>SETTINGS</h2>
+                <button class="modal-close" id="modal-close-settings">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-settings-tab="general">General</button>
+                    <button class="settings-tab" data-settings-tab="appearance">Appearance</button>
+                    <button class="settings-tab" data-settings-tab="sounds">Sounds</button>
+                    <button class="settings-tab" data-settings-tab="defaults">Defaults</button>
+                </div>
+
+                <div class="settings-content">
+                    <!-- General Settings -->
+                    <div class="settings-panel active" id="settings-general">
+                        <div class="settings-section">
+                            <div class="settings-title">Notifications</div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Sound Notifications</label>
+                                    <span class="setting-desc">Play audio cue when a timer or alarm finishes</span>
+                                </div>
+                                <div class="toggle-switch" id="toggle-sound">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>System Notifications</label>
+                                    <span class="setting-desc">Display Native Windows Desktop Alerts</span>
+                                </div>
+                                <div class="toggle-switch" id="toggle-notifications">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Start with Windows</label>
+                                    <span class="setting-desc">Open Timer Pro automatically at startup</span>
+                                </div>
+                                <div class="toggle-switch" id="toggle-autostart">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <label>Minimize to Tray</label>
+                                    <span class="setting-desc">Keep running quietly in background system tray</span>
+                                </div>
+                                <div class="toggle-switch" id="toggle-tray">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appearance Settings -->
+                    <div class="settings-panel" id="settings-appearance">
+                        <div class="settings-section">
+                            <div class="settings-title">Theme Profile</div>
+                            <div class="theme-selector">
+                                <div class="theme-option" data-theme="dark">
+                                    <div class="theme-preview theme-preview-dark"></div>
+                                    <span>Dark Nebula</span>
+                                </div>
+                                <div class="theme-option" data-theme="midnight">
+                                    <div class="theme-preview theme-preview-midnight"></div>
+                                    <span>Ocean Depth</span>
+                                </div>
+                                <div class="theme-option" data-theme="charcoal">
+                                    <div class="theme-preview theme-preview-charcoal"></div>
+                                    <span>Forest Night</span>
+                                </div>
+                                <div class="theme-option" data-theme="purple">
+                                    <div class="theme-preview theme-preview-purple"></div>
+                                    <span>Midnight Purple</span>
+                                </div>
+                                <div class="theme-option" data-theme="arctic">
+                                    <div class="theme-preview theme-preview-arctic"></div>
+                                    <span>Arctic Ice</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <div class="settings-title">Accent Tint Color</div>
+                            <div class="color-picker" id="setting-accent">
+                                <div class="color-option" data-color="#b8924a" style="background:#b8924a" title="Gold"></div>
+                                <div class="color-option" data-color="#5a8fb8" style="background:#5a8fb8" title="Ocean Blue"></div>
+                                <div class="color-option" data-color="#8fb85a" style="background:#8fb85a" title="Emerald Green"></div>
+                                <div class="color-option" data-color="#b85a8f" style="background:#b85a8f" title="Crimson Rose"></div>
+                                <div class="color-option" data-color="#8f5ab8" style="background:#8f5ab8" title="Royal Purple"></div>
+                                <div class="color-option" data-color="#b85a5a" style="background:#b85a5a" title="Scarlet Red"></div>
+                                <div class="color-option" data-color="#5ab8b8" style="background:#5ab8b8" title="Cyber Cyan"></div>
+                                <div class="color-option" data-color="#e27e37" style="background:#e27e37" title="Vibrant Orange"></div>
+                                <div class="color-option" data-color="#3cc380" style="background:#3cc380" title="Mint Green"></div>
+                                <div class="color-option" data-color="#d65757" style="background:#d65757" title="Coral Red"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sounds Settings -->
+                    <div class="settings-panel" id="settings-sounds">
+                        <div class="settings-section">
+                            <div class="settings-title">Audio Profile</div>
+                            <div class="setting-item">
+                                <label>Timer & Alarm Sound</label>
+                                <select class="setting-select" id="setting-timer-sound">
+                                    <option value="default">Default Beep</option>
+                                    <option value="gentle">Gentle Chime</option>
+                                    <option value="urgent">Urgent Alert</option>
+                                    <option value="melody">Melody Chords</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Output Volume</label>
+                                <input type="range" class="setting-range" id="setting-volume" min="0" max="100" value="70">
+                                <span class="range-value" id="volume-value">70%</span>
+                            </div>
+                            <div class="setting-item">
+                                <button class="btn btn-secondary btn-small" id="btn-test-sound">
+                                    <span class="btn-icon">🔊</span>
+                                    <span>Test Selected Sound</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Defaults Settings -->
+                    <div class="settings-panel" id="settings-defaults">
+                        <div class="settings-section">
+                            <div class="settings-title">Default Configurations</div>
+                            <div class="setting-item">
+                                <label>Default Timer Name</label>
+                                <input type="text" class="setting-input" id="setting-default-name" value="Focus Session" placeholder="Focus Session">
+                            </div>
+                            <div class="setting-item">
+                                <label>Default Duration (minutes)</label>
+                                <input type="number" class="setting-input" id="setting-default-duration" value="5" min="1" max="999">
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <div class="settings-title">Alarm Defaults</div>
+                            <div class="setting-item">
+                                <label>Default Time</label>
+                                <input type="time" class="setting-input" id="setting-default-alarm-time" value="07:00">
+                            </div>
+                            <div class="setting-item">
+                                <label>Default Snooze (minutes)</label>
+                                <input type="number" class="setting-input" id="setting-default-snooze" value="5" min="0" max="60">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-reset-settings">Reset to Defaults</button>
+                <button class="btn btn-primary" id="btn-save-settings">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Statistics -->
+    <div class="modal-overlay" id="modal-history">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <h2>STATISTICS</h2>
+                <button class="modal-close" id="modal-close-history">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-overview">
+                    <div class="stat-card">
+                        <div class="stat-card-icon">⏱</div>
+                        <div class="stat-card-value" id="stat-total-timers">0</div>
+                        <div class="stat-card-label">Total Timers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">✓</div>
+                        <div class="stat-card-value" id="stat-completed-timers">0</div>
+                        <div class="stat-card-label">Completed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">⏰</div>
+                        <div class="stat-card-value" id="stat-total-alarms">0</div>
+                        <div class="stat-card-label">Total Alarms</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon">🍅</div>
+                        <div class="stat-card-value" id="stat-completed-pomo">0</div>
+                        <div class="stat-card-label">Focus Pomodoros</div>
+                    </div>
+                </div>
+                <div class="stats-section">
+                    <div class="stats-title">Recent Activity History</div>
+                    <div class="activity-list" id="activity-list">
+                        <div class="empty-state-small">No activity logged yet</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-clear-stats">Clear History</button>
+                <button class="btn btn-primary" id="btn-close-history">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: About -->
+    <div class="modal-overlay" id="modal-about">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>ABOUT</h2>
+                <button class="modal-close" id="modal-close-about">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="about-content">
+                    <div class="about-logo">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="about-title">Timer Pro</div>
+                    <div class="about-version">Version <span id="about-version">3.0.0</span></div>
+                    <div class="about-description">
+                        Professional Time Management Suite<br>
+                        designed with focus and visual elegance in mind.
+                    </div>
+                    <div class="about-features">
+                        <div class="feature-item">✓ Multi-Timers</div>
+                        <div class="feature-item">✓ Pomodoro Workspace</div>
+                        <div class="feature-item">✓ World Clock</div>
+                        <div class="feature-item">✓ Customizable Presets</div>
+                    </div>
+                    <div class="about-info">
+                        <div class="info-row">
+                            <span>Author:</span>
+                            <span>gasanovgasanov702-arch</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Electron:</span>
+                            <span id="about-electron">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Node.js:</span>
+                            <span id="about-node">—</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Chromium:</span>
+                            <span id="about-chrome">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-close-about">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Update Available -->
+    <div class="modal-overlay" id="modal-update">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>UPDATE AVAILABLE</h2>
+                <button class="modal-close" id="modal-close-update">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="update-info">
+                    <div class="update-version-row">
+                        <span class="update-label">New version:</span>
+                        <span class="update-version" id="update-new-version">—</span>
+                    </div>
+                    <div class="update-version-row">
+                        <span class="update-label">Current:</span>
+                        <span class="update-version update-current" id="update-current-version">—</span>
+                    </div>
+                    <div class="update-notes" id="update-notes"></div>
+                </div>
+                <div class="update-progress-container" id="update-progress-container" style="display:none;">
+                    <div class="update-progress-bar">
+                        <div class="update-progress-fill" id="update-progress-fill"></div>
+                    </div>
+                    <div class="update-progress-text" id="update-progress-text">Downloading...</div>
+                </div>
+            </div>
+            <div class="modal-footer" id="update-footer">
+                <button class="btn btn-secondary" id="btn-later-update">Later</button>
+                <button class="btn btn-primary" id="btn-download-update">Download & Install</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

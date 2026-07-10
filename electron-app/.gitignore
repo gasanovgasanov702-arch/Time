@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.log
+.timer_cache
+.timer_pro_*
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

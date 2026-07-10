@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a"/>
+      <stop offset="100%" style="stop-color:#0a0a0a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4a855"/>
+      <stop offset="100%" style="stop-color:#b8924a"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  
+  <!-- Timer circle -->
+  <circle cx="128" cy="128" r="80" fill="none" stroke="url(#accent)" stroke-width="8"/>
+  
+  <!-- Timer inner circle -->
+  <circle cx="128" cy="128" r="60" fill="none" stroke="#b8924a" stroke-width="3" opacity="0.3"/>
+  
+  <!-- Timer hands -->
+  <line x1="128" y1="128" x2="128" y2="70" stroke="#d4a855" stroke-width="6" stroke-linecap="round"/>
+  <line x1="128" y1="128" x2="165" y2="128" stroke="#b8924a" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Center dot -->
+  <circle cx="128" cy="128" r="8" fill="#d4a855"/>
+  
+  <!-- Top button -->
+  <rect x="120" y="30" width="16" height="20" rx="4" fill="#b8924a"/>
+  
+  <!-- Side button -->
+  <rect x="195" y="80" width="20" height="12" rx="4" fill="#b8924a" transform="rotate(45 205 86)"/>
+</svg>

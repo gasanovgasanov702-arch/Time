@@ -1,0 +1,54 @@
+{
+  "name": "timer-pro",
+  "version": "3.0.0",
+  "description": "Professional Timer Management System with Stopwatch, Alarm Clock, Pomodoro Focus Mode, and World Clock",
+  "main": "main.js",
+  "author": "gasanovgasanov702-arch",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gasanovgasanov702-arch/Time.git"
+  },
+  "keywords": [
+    "timer",
+    "stopwatch",
+    "alarm",
+    "pomodoro",
+    "world-clock",
+    "electron",
+    "productivity",
+    "time-management"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win portable",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.timer.pro",
+    "productName": "TimerPro",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "assets/icon.png"
+    },
+    "portable": {
+      "artifactName": "TimerPro.exe"
+    },
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://your-server.com/updates/"
+      }
+    ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.1.7"
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  }
+}

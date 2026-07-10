@@ -1,0 +1,4 @@
+{
+  "updateUrl": "https://your-server.com/updates/",
+  "comment": "Replace this URL with your update server. Place TimerPro.exe and latest.yml there for new versions."
+}
